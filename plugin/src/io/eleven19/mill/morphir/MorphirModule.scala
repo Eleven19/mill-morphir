@@ -29,9 +29,10 @@ trait MorphirModule extends Module {
     def morphirMake: Target[MakeResult] = T {
         val destPath = T.dest / morphirIrFilename()
         val cli = makeCommandRunner()
-        val commandArgs = makeCommandArgs(cli, destPath)()
-        util.Jvm.runSubprocess(commandArgs, T.ctx().env, morphirProjectDir().path)
-        MakeResult(PathRef(destPath), commandArgs, morphirProjectDir().path)
+        val commandArgs = makeCommandArgs(makeCommandRunner(),T.dest / morphirIrFilename())()
+        val workingDir = morphirProjectDir()
+        util.Jvm.runSubprocess(commandArgs, T.ctx().env, workingDir.path)
+        MakeResult(PathRef(destPath), commandArgs, workingDir.path)
     }
 
     /// Only include type information in the IR, no values.
