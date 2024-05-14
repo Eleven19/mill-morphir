@@ -5,7 +5,7 @@ import mill._
 import mill.scalalib._
 
 
-trait MorphirModule extends Module {
+trait MorphirModule extends Module { self =>
     /// Use indentation in the generated JSON file.
     def indentJson: Target[Boolean] = T { false }
 
@@ -26,13 +26,25 @@ trait MorphirModule extends Module {
         )
     }
 
+    def makeArgs: Task[MakeArgs] = T.task {
+        MakeArgs(
+            projectDir = morphirProjectDir().path,
+            output = T.dest / morphirIrFilename(),
+            indentJson = indentJson(),
+            typesOnly = typesOnly(),
+            fallbackCli = None
+        )
+    }
+
     def morphirMake: Target[MakeResult] = T {
-        val destPath = T.dest / morphirIrFilename()
+        val destFolder = T.dest
+        val makeArgs: MakeArgs = self.makeArgs()
         val cli = makeCommandRunner()
-        val commandArgs = makeCommandArgs(makeCommandRunner(),T.dest / morphirIrFilename())()
-        val workingDir = morphirProjectDir()
-        util.Jvm.runSubprocess(commandArgs, T.ctx().env, workingDir.path)
-        MakeResult(PathRef(destPath), commandArgs, workingDir.path)
+        val commandArgs = makeArgs.toCommandArgs(cli)
+        val workingDir = makeArgs.projectDir
+        val destPath = makeArgs.output
+        util.Jvm.runSubprocess(commandArgs, T.ctx().env, workingDir)
+        MakeResult(makeArgs, PathRef(destPath), commandArgs, workingDir)
     }
 
     /// Only include type information in the IR, no values.
