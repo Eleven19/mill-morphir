@@ -15,6 +15,9 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - name: Install test dependencies
+        run:
+          npm install -g finos/morphir-elm
       - run: ./mill -i io.kipp.mill.ci.release.ReleaseModule/publishAll
         env:
           PGP_PASSPHRASE: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}

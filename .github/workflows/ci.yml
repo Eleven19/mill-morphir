@@ -43,6 +43,9 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
+    - name: Install test dependencies
+      run:
+        npm install -g finos/morphir-elm
 
     - name: Compile
       run:
