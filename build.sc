@@ -17,7 +17,7 @@ import de.tobiasroeser.mill.vcs.version.VcsVersion
 
 val millVersions = Seq("0.11.6")
 val scala213     = "2.13.12"
-val pluginName   = "mill-crossbuild"
+val pluginName   = "mill-morphir"
 
 object plugin extends Cross[Plugin](millVersions)
 trait Plugin  extends Cross.Module[String]
@@ -55,11 +55,11 @@ trait Plugin  extends Cross.Module[String]
 
 trait Publish extends CiReleaseModule {
     def pomSettings = PomSettings(
-        description = "A mill plugin for cross-building projects",
+        description = "A mill plugin for working with Morphir projects and workspaces.",
         organization = "io.eleven19.mill",
-        url = "https://github.com/eleven19/mill-crossbuild",
+        url = "https://github.com/eleven19/mill-morphir",
         licenses = Seq(License.`Apache-2.0`),
-        versionControl = VersionControl.github("eleven19", "mill-crossbuild"),
+        versionControl = VersionControl.github("eleven19", "mill-morphir"),
         developers = Seq(
             Developer(
                 "DamianReeves",
@@ -80,7 +80,15 @@ trait ItestCross extends MillIntegrationTestModule with Cross.Module[String] { s
     def pluginsUnderTest = Seq(
         plugin(self.millVersion)
     )
-    // def testBase = millSourcePath / "src"
+    def testBase = millSourcePath / "src"
+    def testInvocations = T {
+        Seq(
+            PathRef(testBase / "basic-standalone") -> Seq(
+                TestInvocation.Targets(Seq("prepare")),
+                TestInvocation.Targets(Seq("verify")),
+            )
+        )
+    }
 }
 
 object MyAliases extends Aliases {
