@@ -11,6 +11,11 @@ import io.eleven19.mill.morphir.elm._
 
 object model extends MorphirElmModule {}
 
+def prepare() = T.command {
+    os.proc("npm", "install").call()
+    ()
+}
+
 def verify(): Command[Unit] = T.command {
     val result            = model.morphirMake()
     val morphirIrJsonPath = result.irFilePath.path

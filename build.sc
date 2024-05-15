@@ -80,7 +80,15 @@ trait ItestCross extends MillIntegrationTestModule with Cross.Module[String] { s
     def pluginsUnderTest = Seq(
         plugin(self.millVersion)
     )
-    // def testBase = millSourcePath / "src"
+    def testBase = millSourcePath / "src"
+    def testInvocations = T {
+        Seq(
+            PathRef(testBase / "basic-standalone") -> Seq(
+                TestInvocation.Targets(Seq("prepare")),
+                TestInvocation.Targets(Seq("verify")),
+            )
+        )
+    }
 }
 
 object MyAliases extends Aliases {
