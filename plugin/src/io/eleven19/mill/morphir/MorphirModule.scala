@@ -2,8 +2,8 @@ package io.eleven19.mill.morphir
 
 import io.eleven19.mill.morphir.api.{MakeArgs, MakeResult, MorphirProjectConfig}
 import mill._
-import mill.scalalib._
 import mill.api.JsonFormatters._
+import mill.scalalib._
 import upickle.default._
 
 trait MorphirModule extends Module { self =>

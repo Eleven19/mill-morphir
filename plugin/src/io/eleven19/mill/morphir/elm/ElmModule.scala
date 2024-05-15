@@ -1,7 +1,7 @@
 package io.eleven19.mill.morphir.elm
+import io.eleven19.mill.morphir.js.JsModule
 import mill._
 import mill.scalalib._
-import io.eleven19.mill.morphir.js.JsModule
 
 trait ElmModule extends JsModule {
 

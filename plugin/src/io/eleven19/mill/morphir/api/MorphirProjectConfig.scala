@@ -3,7 +3,7 @@ import mill.api.JsonFormatters._
 
 case class MorphirProjectConfig(
     name:              String,
-    sourceDirectory:   os.Path,
+    sourceDirectory:   String,
     exposedModules:    List[String],
     dependencies:      List[String],
     localDependencies: List[String],
