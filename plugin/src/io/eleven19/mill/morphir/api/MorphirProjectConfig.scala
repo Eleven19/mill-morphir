@@ -1,3 +1,14 @@
 package io.eleven19.mill.morphir.api
+import mill.api.JsonFormatters._
 
-case class MorphirProjectConfig()
+case class MorphirProjectConfig(
+    name:              String,
+    sourceDirectory:   os.Path,
+    exposedModules:    List[String],
+    dependencies:      List[String],
+    localDependencies: List[String],
+  )
+
+object MorphirProjectConfig {
+    implicit val jsonFormatter: upickle.default.ReadWriter[MorphirProjectConfig] = upickle.default.macroRW
+}

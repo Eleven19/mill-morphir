@@ -9,11 +9,10 @@ import io.eleven19.mill.morphir._
 import io.eleven19.mill.morphir.api.MakeResult
 import io.eleven19.mill.morphir.elm._
 
-object model extends MorphirElmModule {
-}
+object model extends MorphirElmModule {}
 
 def verify(): Command[Unit] = T.command {
-    val result = model.morphirMake()
+    val result            = model.morphirMake()
     val morphirIrJsonPath = result.irFilePath.path
     assertEquals(os.exists(morphirIrJsonPath), true)
     ()

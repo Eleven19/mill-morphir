@@ -7,23 +7,23 @@ case class MakeArgs(
     output:      os.Path,
     indentJson:  Boolean,
     typesOnly:   Boolean,
-    fallbackCli: Option[Boolean]
-  ){ self =>
+    fallbackCli: Option[Boolean],
+  ) { self =>
     def useFallbackCli: Boolean = self.fallbackCli.getOrElse(false)
 
     def toCommandArgs: Seq[String] =
-            Seq(
-                "make",
-                "--output",
-                output.toString(),
-                if (indentJson) "--indent-json" else "",
-                if (typesOnly) "--types-only" else "",
-                if (useFallbackCli) "--fallback-cli" else ""
-            )
+        Seq(
+            "make",
+            "--output",
+            output.toString(),
+            if (indentJson) "--indent-json" else "",
+            if (typesOnly) "--types-only" else "",
+            if (useFallbackCli) "--fallback-cli" else "",
+        )
 
-    def toCommandArgs(cli:String): Seq[String] = Seq(cli) ++ toCommandArgs
+    def toCommandArgs(cli: String): Seq[String] = Seq(cli) ++ toCommandArgs
 }
 
 object MakeArgs {
-    implicit val jsonFormatter:upickle.default.ReadWriter[MakeArgs] = upickle.default.macroRW
+    implicit val jsonFormatter: upickle.default.ReadWriter[MakeArgs] = upickle.default.macroRW
 }
