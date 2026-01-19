@@ -16,18 +16,17 @@ trait MorphirModule extends Module { self =>
         val cmdCandidates = Seq("morphir-elm", "morphir")
         // Check for local node_modules binaries first
         val potentialBases = Seq(
-            Task.ctx().workspace, 
+            Task.ctx().workspace,
             moduleDir,
-            moduleDir / os.up // In case module is nested one level deep
+            moduleDir / os.up, // In case module is nested one level deep
         ).distinct
-        
+
         val ways = potentialBases.flatMap { base =>
-            val binPaths = cmdCandidates.map(cmd => base / "node_modules" / ".bin" / cmd)
+            val binPaths   = cmdCandidates.map(cmd => base / "node_modules" / ".bin" / cmd)
             val scriptPath = base / "node_modules" / "morphir-elm" / "cli" / "morphir-elm.js"
             binPaths :+ scriptPath
         }
-        
-        
+
         ways.find(os.exists).map(_.toString()).getOrElse("morphir-elm")
     }
     def morphirProjectDir: Task[PathRef] = Task.Source(moduleDir)
@@ -70,14 +69,14 @@ trait MorphirModule extends Module { self =>
         val cli = makeCommandRunner()
 
         val commandArgs = if (cli.endsWith(".js") || cli.endsWith("morphir-elm")) {
-             // It's a JS script, we need to run it with node
-             Seq("node", cli) ++ makeArgs.toCommandArgs 
+            // It's a JS script, we need to run it with node
+            Seq("node", cli) ++ makeArgs.toCommandArgs
         } else {
-             makeArgs.toCommandArgs(cli)
+            makeArgs.toCommandArgs(cli)
         }
-        
-        val workingDir  = makeArgs.projectDir
-        val destPath    = makeArgs.output
+
+        val workingDir = makeArgs.projectDir
+        val destPath   = makeArgs.output
         Task.ctx().log.error(s"DEBUG: Running command: $commandArgs in $workingDir")
         os.proc(commandArgs).call(cwd = workingDir, env = Task.ctx().env)
         MakeResult(makeArgs, PathRef(destPath), commandArgs, workingDir)
