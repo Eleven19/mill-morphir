@@ -27,7 +27,7 @@ jobs:
           gpg_private_key: ${{ secrets.ELEVEN19_IO_PGP_SECRET_BASE64 }}
           passphrase: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}
       - name: Publish to Sonatype
-        run: ./mill -i __.publishToSonatype --sonatypeUri "https://central.sonatype.com" --sonatypeSnapshotUri "https://central.sonatype.com"
+        run: ./mill -i __.publishSonatypeCentral
         env:
           SONATYPE_PASSWORD: ${{ secrets.ELEVEN19_SONATYPE_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.ELEVEN19_SONATYPE_USERNAME }}
