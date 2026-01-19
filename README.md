@@ -37,10 +37,26 @@ object myproject extends MorphirModule {
 
 ### Prerequisites
 
-- **Java**: 11 or higher (Java 17+ recommended).
-- **Mill**: 1.0.6 (handled via `./mill` script).
-- **Node.js**: Required for `morphir-elm` execution during tests.
-- **morphir-elm**: Install globally via `npm install -g morphir-elm` or ensure it is available in your workspace `node_modules`.
+We use **[mise](https://mise.jdx.dev/)** to manage our development tools.
+
+1.  Install `mise`.
+2.  Run `mise install` to set up specific versions of `java`, `node`, and utilities.
+
+Alternatively, manually install:
+- **Java**: 17+
+- **Mill**: 1.0.6 (or use `./mill`)
+- **Node.js**: 20+
+- **morphir-elm**: `npm install -g morphir-elm`
+
+### Common Tasks (via Mise)
+
+```bash
+mise run build      # Compile
+mise run test       # Run all tests
+mise run release    # Trigger release
+```
+
+### Manual Commands
 
 ### Build
 

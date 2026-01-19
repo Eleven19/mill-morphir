@@ -17,20 +17,25 @@ To publish, you must have the following secrets configured in the GitHub reposit
 
 Versioning is handled dynamically based on **Git Tags**.
 - The `build.mill` defines `gitHeadVersion`, which runs `git describe --tags --always --dirty`.
-- **To release a new version**, simply push a tag:
+- **To release a new version**, use the `mise` task:
   ```bash
-  git tag v0.1.0
-  git push origin v0.1.0
+  mise run release v0.1.0
   ```
+  This command automatically:
+  1.  Generates `CHANGELOG.md` using `git-cliff`.
+  2.  Commits the changelog.
+  3.  Creates a GitHub Release and Tag.
+  4.  Pushes changes to GitHub, which triggers the Release workflow.
 
 ## Release Workflow
 
 The automation is defined in `.github/workflows/release.yml`.
 
-1.  **Trigger**: The workflow runs on pushes to `main` and on tag pushes.
+1.  **Trigger**: The workflow runs on pushes to `main` and on tag pushes. It uses concurrency controls to queue releases.
 2.  **Steps**:
     - Checkout code.
-    - Setup Java 17 and Node.js 20.
+    - **Caching**: Uses `coursier/cache-action` to cache Mill dependencies.
+    - **Tooling**: Uses `jdx/mise-action` to setup Java and Node.js (via `mise`).
     - Install `morphir-elm` (required for build/test sanity check).
     - **Publish**: Executes `./mill -i __.publishSonatypeCentral`.
     - **Environment Injection**: Accesses GitHub Secrets and maps them to the `MILL_` prefixed environment variables required by the plugin:
