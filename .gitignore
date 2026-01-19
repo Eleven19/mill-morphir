@@ -4,3 +4,5 @@ out/
 .metals/
 .vscode/
 .idea/
+.mise/
+.mise.local.toml

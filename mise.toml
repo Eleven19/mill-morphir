@@ -1,0 +1,50 @@
+[tools]
+java = "temurin-17"
+node = "20"
+mill = "1.0.6"
+git-cliff = "latest"
+
+[tasks]
+build = { run = "./mill -i __.compile", description = "Build all modules" }
+test = { run = "./mill -i __.test", description = "Run all tests" }
+"test:unit" = { run = "./mill -i plugin.test.test", description = "Run unit tests" }
+"test:it" = { run = "./mill -i itest.test", description = "Run integration tests" }
+clean = { run = "./mill -i clean", description = "Clean build artifacts" }
+
+[tasks.release]
+description = "Prepare and trigger a release (usage: mise run release <version>)"
+run = """
+#!/usr/bin/env bash
+set -e
+
+VERSION=$1
+
+if [ -z "$VERSION" ]; then
+  echo "Usage: mise run release <version>"
+  exit 1
+fi
+
+# Ensure version format
+if [[ ! "$VERSION" =~ ^v ]]; then
+    VERSION="v$VERSION"
+fi
+
+echo "Preparing release $VERSION..."
+
+# Generate CHANGELOG.md
+if command -v git-cliff &> /dev/null; then
+    echo "Generating CHANGELOG.md..."
+    git-cliff --tag "$VERSION" --output CHANGELOG.md
+    git add CHANGELOG.md
+    git commit -m "chore(release): prepare for $VERSION" || echo "No changes to commit"
+else
+    echo "git-cliff not found, skipping changelog generation."
+fi
+
+# Create and push release via GitHub CLI
+# This creates the tag remotely, which triggers the CI/Release workflow
+echo "Creating GitHub Release for $VERSION..."
+gh release create "$VERSION" --generate-notes --title "$VERSION"
+
+echo "Release $VERSION triggered successfully!"
+"""
