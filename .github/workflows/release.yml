@@ -16,7 +16,7 @@ jobs:
         with:
           fetch-depth: 0
       - uses: coursier/cache-action@v6
-      - uses: jdx/mise-action@v2
+      - uses: jdx/mise-action@v3
       - name: Install test dependencies
         run:
           npm install -g morphir-elm
