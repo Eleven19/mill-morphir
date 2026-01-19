@@ -21,14 +21,10 @@ jobs:
       - name: Install test dependencies
         run:
           npm install -g morphir-elm
-      - name: Import GPG key
-        uses: crazy-max/ghaction-import-gpg@v6
-        with:
-          gpg_private_key: ${{ secrets.ELEVEN19_IO_PGP_SECRET_BASE64 }}
-          passphrase: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}
       - name: Publish to Sonatype
         run: ./mill -i __.publishSonatypeCentral
         env:
           MILL_SONATYPE_PASSWORD: ${{ secrets.ELEVEN19_SONATYPE_PASSWORD }}
           MILL_SONATYPE_USERNAME: ${{ secrets.ELEVEN19_SONATYPE_USERNAME }}
-          PGP_PASSPHRASE: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}
+          MILL_PGP_PASSPHRASE: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}
+          MILL_PGP_SECRET_BASE64: ${{ secrets.ELEVEN19_IO_PGP_SECRET_BASE64 }}
