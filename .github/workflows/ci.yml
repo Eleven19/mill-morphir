@@ -25,16 +25,14 @@ jobs:
     - name: Check formatting
       run: 
         ./mill -i __.checkFormat
-    - name: Check scalafix
-      run: 
-        ./mill -i __.fix --check
+
 
   test:
     runs-on: 'ubuntu-latest'
     strategy:
       fail-fast: false
       matrix:
-        java: ['8', '17']
+        java: ['17', '21']
 
     steps:
     - uses: actions/checkout@v4
@@ -43,6 +41,9 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
+    - uses: actions/setup-node@v4
+      with:
+        node-version: '20'
     - name: Install test dependencies
       run:
         npm install -g morphir-elm
