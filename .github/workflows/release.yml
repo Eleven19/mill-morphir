@@ -22,9 +22,11 @@ jobs:
         run:
           npm install -g morphir-elm
       - name: Publish to Sonatype
-        run: ./mill -i __.publishSonatypeCentral
+        run: |
+          export MILL_PGP_SECRET_BASE64=$(echo "$MILL_PGP_SECRET_BASE64_RAW" | tr -d '\n\r ')
+          ./mill -i __.publishSonatypeCentral
         env:
           MILL_SONATYPE_PASSWORD: ${{ secrets.ELEVEN19_SONATYPE_PASSWORD }}
           MILL_SONATYPE_USERNAME: ${{ secrets.ELEVEN19_SONATYPE_USERNAME }}
           MILL_PGP_PASSPHRASE: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}
-          MILL_PGP_SECRET_BASE64: ${{ secrets.ELEVEN19_IO_PGP_SECRET_BASE64 }}
+          MILL_PGP_SECRET_BASE64_RAW: ${{ secrets.ELEVEN19_IO_PGP_SECRET_BASE64 }}
