@@ -4,6 +4,10 @@ on:
     branches:
       - main
     tags: ["*"]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -11,6 +15,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - uses: coursier/cache-action@v6
       - uses: jdx/mise-action@v2
       - name: Install test dependencies
         run:
