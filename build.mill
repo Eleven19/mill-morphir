@@ -3,7 +3,7 @@ import mill.scalalib._
 import mill.scalalib.scalafmt._
 import mill.scalalib.publish._
 
-val millVersions = Seq("1.0.6")
+val millVersions = Seq("1.0.0")
 val scala3       = "3.3.3"
 val pluginName   = "mill-morphir"
 
