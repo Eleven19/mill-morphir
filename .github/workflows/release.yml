@@ -15,12 +15,20 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
       - name: Install test dependencies
         run:
           npm install -g morphir-elm
-      - run: ./mill -i io.kipp.mill.ci.release.ReleaseModule/publishAll
+      - name: Import GPG key
+        uses: crazy-max/ghaction-import-gpg@v6
+        with:
+          gpg_private_key: ${{ secrets.ELEVEN19_IO_PGP_SECRET_BASE64 }}
+          passphrase: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}
+      - name: Publish to Sonatype
+        run: ./mill -i __.publishToSonatype --sonatypeUri "https://central.sonatype.com" --sonatypeSnapshotUri "https://central.sonatype.com"
         env:
-          PGP_PASSPHRASE: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}
-          PGP_SECRET: ${{ secrets.ELEVEN19_IO_PGP_SECRET_BASE64 }}
           SONATYPE_PASSWORD: ${{ secrets.ELEVEN19_SONATYPE_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.ELEVEN19_SONATYPE_USERNAME }}
+          PGP_PASSPHRASE: ${{ secrets.ELEVEN19_IO_PGP_PASSPHRASE }}

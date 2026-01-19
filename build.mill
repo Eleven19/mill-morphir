@@ -11,10 +11,18 @@ object plugin extends Cross[Plugin](millVersions)
 trait Plugin  extends Cross.Module[String]
     with ScalaModule
     with PublishModule
-    with ScalafmtModule {
+    with ScalafmtModule 
+    with SonatypeCentralPublishModule {
     val millVersion  = crossValue
     def scalaVersion = Task("3.7.3")
-    def publishVersion = Task("0.0.1-SNAPSHOT")
+
+    def gitHeadVersion = Task.Input {
+        os.proc("git", "describe", "--tags", "--always", "--dirty").call().out.text().trim()
+    }
+    
+    def publishVersion = Task {
+        sys.env.getOrElse("MILL_VERSION", gitHeadVersion())
+    }
     def millBinaryVersion(v: String) = v.split('.').head
     def artifactName = s"${pluginName}_mill${millBinaryVersion(millVersion)}"
 
