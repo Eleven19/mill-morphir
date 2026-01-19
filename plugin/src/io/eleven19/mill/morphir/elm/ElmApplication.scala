@@ -1,13 +1,14 @@
 package io.eleven19.mill.morphir.elm
 
-import mill.{PathRef, T, Target, util}
+import mill._
+import mill.api.Task
 
 trait ElmApplication extends ElmModule {
-    def targetFileName = T("elm.js")
+    def targetFileName = Task("elm.js")
 
-    def elmMake: Target[PathRef] = T {
-        val moduleName = millSourcePath.last
-        val destPath   = T.dest / targetFileName()
+    def elmMake: Task[PathRef] = Task {
+        val moduleName = moduleDir.last
+        val destPath   = Task.dest / targetFileName()
 
         val commandArgs = Seq(
             jsPackageManagerRunner(),
@@ -16,7 +17,7 @@ trait ElmApplication extends ElmModule {
             "--output",
             destPath.toString(),
         ) ++ allSourceFiles().map(_.path.toString)
-        util.Jvm.runSubprocess(commandArgs, T.ctx().env, T.ctx().workspace)
+        os.proc(commandArgs).call(cwd = Task.ctx().workspace, env = Task.ctx().env)
         PathRef(destPath)
     }
 }

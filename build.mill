@@ -1,0 +1,83 @@
+import mill._
+import mill.scalalib._
+import mill.scalalib.scalafmt._
+import mill.scalalib.publish._
+
+val millVersions = Seq("1.0.6")
+val scala3       = "3.3.3"
+val pluginName   = "mill-morphir"
+
+object plugin extends Cross[Plugin](millVersions)
+trait Plugin  extends Cross.Module[String]
+    with ScalaModule
+    with PublishModule
+    with ScalafmtModule {
+    val millVersion  = crossValue
+    def scalaVersion = Task("3.7.3")
+    def publishVersion = Task("0.0.1-SNAPSHOT")
+    def millBinaryVersion(v: String) = v.split('.').head
+    def artifactName = s"${pluginName}_mill${millBinaryVersion(millVersion)}"
+
+    def compileMvnDeps = super.compileMvnDeps() ++ Seq(
+        mvn"com.lihaoyi::mill-libs:${millVersion}",
+        mvn"com.lihaoyi::upickle:4.0.2"
+    )
+
+    def sources = Task {
+        super.sources() ++ Seq(
+            moduleDir / s"src-mill${millBinaryVersion(millVersion)}"
+        ).map(PathRef(_))
+    }
+
+    def pomSettings = PomSettings(
+        description = "A mill plugin for working with Morphir projects and workspaces.",
+        organization = "io.eleven19.mill",
+        url = "https://github.com/eleven19/mill-morphir",
+        licenses = Seq(License.`Apache-2.0`),
+        versionControl = VersionControl.github("eleven19", "mill-morphir"),
+        developers = Seq(
+            Developer(
+                "DamianReeves",
+                "Damian Reeves",
+                "https://github.com/DamianReeves",
+            )
+        ),
+    )
+    object test extends ScalaTests with TestModule.Utest {
+        def mvnDeps = super.mvnDeps() ++ Seq(
+            mvn"com.lihaoyi::utest:0.8.4",
+            mvn"com.lihaoyi::upickle:4.0.2",
+            mvn"com.lihaoyi::mill-libs:${millVersion}"
+        )
+    }
+
+    object itest extends ScalaTests with TestModule.Utest {
+        // Point to the integration test sources
+        def sources = Task.Sources(Task.ctx().workspace / "itest" / "src" / "basic-standalone" / "test" / "src")
+        
+        // Explicitly add deps
+        def mvnDeps = super.mvnDeps() ++ Seq(
+            mvn"com.lihaoyi::utest:0.8.4",
+            mvn"com.lihaoyi::mill-testkit:$millVersion",
+            mvn"com.lihaoyi::mill-libs:$millVersion",
+            mvn"com.lihaoyi::upickle:4.0.2"
+        )
+
+        def forkEnv = Task {
+             sys.env ++ Map(
+                 "MILL_EXECUTABLE_PATH" -> millExecutable.assembly().path.toString,
+                 "MILL_ITEST_PROJECT_ROOT" -> (Task.ctx().workspace / "itest" / "src" / "basic-standalone").toString,
+                 "MILL_USER_TEST_REPO" -> publishLocalTestRepo().path.toString,
+                 "COURSIER_REPOSITORIES" -> s"central|file://${publishLocalTestRepo().path.toString}",
+             )
+        }
+        
+        object millExecutable extends JavaModule {
+             def mvnDeps = Seq(mvn"com.lihaoyi:mill-runner-launcher_3:$millVersion")
+             def mainClass = Some("mill.launcher.MillLauncherMain")
+        }
+    }
+}
+
+// TODO: Re-implement integration tests using Mill 1.x built-in testing
+
