@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: coursier/cache-action@v6
+    - uses: coursier/cache-action@v8
     - uses: jdx/mise-action@v2
 
     - name: Check formatting
@@ -36,7 +36,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: coursier/cache-action@v6
+    - uses: coursier/cache-action@v8
     - uses: jdx/mise-action@v2
     - name: Install test dependencies
       run:
